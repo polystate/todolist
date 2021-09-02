@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="todolist.js" defer></script>
+    <script src="todoDOM.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="todolist.css">
+    <title>Todo List</title>
+    
+</head>
+<body>
+    <div id = "page-title">
+        <h1>Welcome to your personal checklist</h1>
+    </div>
+    <div id = "user-nav">
+        <p class = "menu-link">New Project</p>
+        <span></span>
+        <p class = "menu-link" id = "addTodo">Add Todo</p>
+        <span></span>
+        <div class = "dropdown">
+        <p class = "menu-link dropbtn" onclick="displayController.selectProject()">Select Project</p>
+        <div id= "myDropdown" class= "dropdown-content">
+            <!-- <a href="#">Untitled Project</a> -->
+            <!-- <a href="#">Link 2</a>
+            <a href="#">Link 3</a> -->
+        </div>
+        </div>
+        <span></span>
+    </div>
+    <div id = "form-nav">
+        
+    </div>
+    <div id = "main-body">
+        <div id = "title-section">
+            <p id ="project-name">Untitled Project</p>
+            <p class ="subtitle">Total Tasks: 1</p>
+            <p class ="subtitle">Tasks Completed: 0</p>
+            <p class ="subtitle">You have completed 0% of your tasks</p>
+        </div>
+        <div id = "todo-body">
+            <div id = "todo-template0" class = "todo-template">
+                <p class = "todo-title">Gardening</p>
+                <p class = "todo-items"><input type="checkbox" id="priority0" name="priority0" value="priority0" class="checkbox" onclick="displayController.toggleBox(0)"></p>
+                <!-- <p class = "numeral">1</p> -->
+                <p class = "todo-items">Water the plants</p>
+                <p class = "todo-items">7/19/2021</p>
+                <p class = "todo-items">Notes</p>
+                <button onclick="displayController.deleteTodo(0)">Delete</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
