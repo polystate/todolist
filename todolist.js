@@ -16,9 +16,9 @@ const userCreate = (function(){
         }
         return projectObj;
     }
-    const deleteProject = (name) => {
+    const removeProject = (name) => {
         index = projectList.findIndex(obj => obj.projectTitle === name);
-        console.log(`Deleted ${projectList[index].projectTitle} with ${projectList[index].toDoTitle} task.`);
+        console.log(`Deleted ${projectList[index].projectTitle}`);
         projectList.splice(index,1);
     }
     const changeProject = (name) => {
@@ -27,8 +27,6 @@ const userCreate = (function(){
             projectList[obj].projectSelect = false;
         }
         projectList[index].projectSelect = true;
-        console.log(projectList[index].projectSelect);
-
     }
     const defaultProject = {
         projectTitle: "Untitled Project",
@@ -47,8 +45,10 @@ const userCreate = (function(){
     }
     const projectList = [defaultProject];
     const currentProject = projectList[projectList.findIndex(obj => obj.projectSelect === true)];
-    return { createProject, deleteProject, projectList, currentProject, changeProject };
+    return { createProject, removeProject, projectList, currentProject, changeProject };
 })();
+
+////////////////////////////////////////////////////////////////
 
 //DOM Logic Goes Here
 
@@ -63,16 +63,16 @@ const displayController = (function(){
         } else if(link.innerText === "Add Todo"){
             navToggle("Create New Task", "Create New Project", "todo");
         } 
-        // else if(link.innerText === "Select Project"){
-        //     selectProject();
-        // }
     }))
 
     const navToggle = (formTitle, otherTitle, type) => {
         formNav = document.getElementById('form-nav');
         if(menuOpen){
             currentMenuTitle = document.getElementById("addTodoTitle");
-            if(currentMenuTitle.innerText === otherTitle){
+            if(currentMenuTitle === null){
+                navForm(formTitle, type);
+                return;
+            } else if(currentMenuTitle.innerText === otherTitle){
                 formNav.innerHTML = '';
                 navForm(formTitle, type);
             } else {
@@ -98,47 +98,44 @@ const displayController = (function(){
         linkList = document.querySelectorAll("a");
         linkList.forEach(link => {
             link.addEventListener('click',function(){
-                console.log(link);
+                formNav = document.getElementById("form-nav");
+                formNav.innerHTML = "";
                 userCreate.changeProject(link.innerText);
                 titleSection = document.getElementById("title-section");
                 index = userCreate.projectList.findIndex(obj => obj.projectTitle === link.innerText);
-                console.log(typeof(index));
                 userCreate.currentProject = userCreate.projectList[index];
                 totalTasks = userCreate.projectList[index].toDoList.toDoTitles.length;
                 tasksCompleted = userCreate.projectList[index].toDoList.completed.filter(Boolean).length;
-                percentCompleted = Math.floor(tasksCompleted/totalTasks * 100);
+                percentCompleted = `${Math.floor(tasksCompleted/totalTasks * 100)}`;
+                if(isNaN(percentCompleted)){
+                    percentNotified = `There are no current tasks`
+                } else {
+                    percentNotified = `You have completed ${percentCompleted}% of your tasks`
+                }
                 titleSection.innerHTML = "";
                 titleSection.innerHTML = `<div id = "title-section">
                 <p id ="project-name">${link.innerText}</p>
                 <p class ="subtitle">Total Tasks: ${totalTasks}</p>
                 <p class ="subtitle">Tasks Completed: ${tasksCompleted}</p>
-                <p class ="subtitle">You have completed ${percentCompleted}% of your tasks</p>
+                <p class ="subtitle">${percentNotified}</p>
+                <button id = "deleteButton" onclick = "displayController.deleteProject()">Delete Project</button>
             </div>`
                 toDoBody = document.getElementById('todo-body');
                 toDoBody.innerHTML = "";
                 for(let i = 0; i < totalTasks; i++){
                     appendTodo(userCreate.projectList[index].toDoList.id[i], userCreate.projectList[index].toDoList.toDoTitles[i], userCreate.projectList[index].toDoList.descriptions[i], userCreate.projectList[index].toDoList.dueDates[i], userCreate.projectList[index].toDoList.completed[i]);
                 }
-                // appendTodo(newID, newTodo[0], newTodo[1], newTodo[2]);
-                // displayController.appendTodo(userCreate.projectList[0].toDoList.id[0], userCreate.projectList[0].toDoList.toDoTitles[0], userCreate.projectList[0].toDoList.descriptions[0], userCreate.projectList[0].toDoList.dueDates[0]);
-                //above is working
-                //you need to change to currentProject as well to fix bug. and you need to update your completed booleans and make sure they are aligned
-                //duh. the issue is that the checkboxes are no longer toggled when you recreate the todo templates. get completed array of true/false values. then put it at end of loop to go along with the last "pretoggled" argument of the appendTodo function
-                //when there's no todos make sure that there's still some todobody green background left, also take away NaN% of your tasks if all todos are gone
-                //also fix the line-through for your checkd boxes when they are recreated as they aren't working 
             })
         })
-
     }
     
     // Close the dropdown menu if the user clicks outside of it
     window.onclick = function(event) {
       if (!event.target.matches('.dropbtn')) {
-    
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
+        let dropdowns = document.getElementsByClassName("dropdown-content");
+        let i;
         for (i = 0; i < dropdowns.length; i++) {
-          var openDropdown = dropdowns[i];
+          let openDropdown = dropdowns[i];
           if (openDropdown.classList.contains('show')) {
             openDropdown.classList.remove('show');
           }
@@ -160,6 +157,7 @@ const displayController = (function(){
         <p class ="subtitle">Total Tasks: 1</p>
         <p class ="subtitle">Tasks Completed: 0</p>
         <p class ="subtitle">You have completed 0% of your tasks</p>
+        <button id = "deleteButton" onclick = "displayController.deleteProject()">Delete Project</button>
     </div>`
         toDoBody = document.getElementById("todo-body");
         toDoBody.innerHTML = "";
@@ -172,8 +170,25 @@ const displayController = (function(){
         <p class = "todo-items">Notes</p>
         <button onclick="displayController.deleteTodo(0)">Delete</button>
     </div>`
-        
-
+    }
+    
+    const deleteProject = () => {
+        console.log("deleting project");
+        userCreate.removeProject(userCreate.currentProject.projectTitle);
+        // userCreate.currentProject = userCreate.projectList[0];
+        titleSection = document.getElementById("title-section");
+        titleSection.innerHTML = "";
+        toDoBody = document.getElementById("todo-body");
+        titlePara = document.createElement("p");
+        titlePara.setAttribute("id","noProjects");
+        titleSection.appendChild(titlePara);
+        toDoBody.innerHTML = "";
+        if(userCreate.projectList.length === 0){
+            console.log("There are no projects remaining.");
+            titlePara.innerText = "There are no projects remaining. Please click on New Project to create a new project.";
+        } else {
+            titlePara.innerText = `${userCreate.currentProject.projectTitle} was removed. Please select another project :)`;
+        }
     }
 
    const inventoryUpdate = () => {
@@ -183,7 +198,11 @@ const displayController = (function(){
         percentComplete = Math.floor(tasksComplete/taskCount * 100);
         subtitles[0].innerText = `Total Tasks: ${taskCount}`;
         subtitles[1].innerText = `Tasks Completed: ${tasksComplete}`;
-        subtitles[2].innerText = `You have completed ${percentComplete}% of your tasks`
+        if(isNaN(percentComplete)){
+            subtitles[2].innerText = `There are no current tasks`
+        } else {
+            subtitles[2].innerText = `You have completed ${percentComplete}% of your tasks`
+        }
     }
 
     const toggleBox = (id) => {
@@ -215,7 +234,6 @@ const displayController = (function(){
         title = document.createElement("p");
         title.innerText = navtitle;
         title.setAttribute('id','addTodoTitle');
-        title.style = "margin-left: 43%; font-size: 2rem;";
         formDiv = document.createElement("div");
         formDiv.setAttribute('id','form-section')
         enterTitle = document.createElement("p");
@@ -227,10 +245,13 @@ const displayController = (function(){
         titleInput = document.createElement("input");
         descriptionInput = document.createElement("input");
         dueDateInput = document.createElement("input");
+        titleInput.setAttribute("class","nav-input");
+        descriptionInput.setAttribute("class","nav-input");
+        dueDateInput.setAttribute("class","nav-input");
         submit = document.createElement("button");
+        submit.setAttribute("id","nav-submit");
         submit.innerHTML = "Submit";
-       
-        submit.style = "margin-left: 43%; margin-top: 2rem; margin-bottom: 2rem;";
+        submit.style = "margin-top: 2rem; margin-bottom: 2rem;";
         formDiv.appendChild(enterTitle);
         formDiv.appendChild(titleInput);
         formDiv.appendChild(enterDescription);
@@ -240,16 +261,28 @@ const displayController = (function(){
         formNav.appendChild(title);
         if(type === "project"){
             projectTitleInput = document.createElement("input");
+            projectTitleInput.setAttribute("class","nav-input");
             enterProjectTitle = document.createElement("p");
+            createFirstTodo = document.createElement("p");
             enterProjectTitle.innerText = "Enter new project title here:";
+            createFirstTodo.innerText = "Create your first todo here:";
+            projectTitleInput.setAttribute("id","projectInput");
+            enterProjectTitle.setAttribute("class","enterProjectTitle");
+            createFirstTodo.setAttribute("class","enterProjectTitle");
             formNav.appendChild(enterProjectTitle);
             formNav.appendChild(projectTitleInput);   
+            formNav.appendChild(createFirstTodo);
         }
         formNav.appendChild(formDiv);
         formNav.appendChild(submit);
         submit.addEventListener('click',function(){
-            
-            console.log(dataArr);
+            navInputs = document.getElementsByClassName("nav-input")
+            for(let i = 0; i < navInputs.length; i++){
+                if(navInputs[i].value == ""){
+                    alert("One or more fields were left blank. Try again.")
+                    return;
+                }
+            }
             if(type === "todo"){
             dataArr.push(titleInput.value, descriptionInput.value, dueDateInput.value);
             addTodo(dataArr);
@@ -259,7 +292,6 @@ const displayController = (function(){
             }
             dataArr = [];
         })
-        // return { dataArr };
     }
 
      //Add Todo
@@ -273,21 +305,7 @@ const displayController = (function(){
         addToProject[3][addToProject[3].length-1] = false;
         const newID = userCreate.currentProject.toDosCount - 1;
         addToProject[5][addToProject[5].length-1] = newID;
-
-        //Append DIV
-        // const toDoBody = document.getElementById("todo-body");
-        // const newTemplate = document.createElement("div");
-        // toDoBody.appendChild(newTemplate);
-        // newTemplate.setAttribute("class","todo-template")
-        // newTemplate.setAttribute("id", `todo-template${newID}`);
-        // newTemplate.innerHTML += `<p class = "todo-title">${newTodo[0]}</p>
-        // <p class = "todo-items"><input type="checkbox" id="priority${newID}" name="priority${newID}" value="priority${newID}" class="checkbox" onclick="displayController.toggleBox(${newID})"></p>
-        // <p class = "todo-items">${newTodo[1]}</p>
-        // <p class = "todo-items">${newTodo[2]}</p>
-        // <p class = "todo-items">Notes</p>
-        // <button onclick="displayController.deleteTodo(${newID})">Delete</button>`
         appendTodo(newID, newTodo[0], newTodo[1], newTodo[2]);
-        //
         inventoryUpdate();
         navForm.dataArr = [];
     }
@@ -307,27 +325,11 @@ const displayController = (function(){
 
         if(pretoggled){
             document.getElementById(`priority${id}`).checked = true;
+            // document.getElementsByClassName('todo-title')[id].style = "text-decoration: line-through;"
+            document.getElementById(`todo-template${id}`).firstChild.style = "text-decoration: line-through";
+            
         }
     }
 
-    return { toggleBox, deleteTodo, navForm, menuOpen, appendProject, selectProject, appendTodo };
+    return { toggleBox, deleteTodo, navForm, menuOpen, appendProject, selectProject, appendTodo, deleteProject };
 })();
-
-
-//Menu
-//View All Projects
-//Change Current Project
-//Delete Project
-
-
-
-//
-
-
-
-
-
-
-
-
-

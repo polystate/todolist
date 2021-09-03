@@ -1,11 +1,14 @@
 body{
     padding: 0;
     margin: 0;
+    width: 100%;
 }
 
 #page-title{
     text-align: center;
     font-size: 2rem;
+    cursor: pointer;
+    background: whitesmoke;
 }
 
 /*User Nav*/
@@ -23,7 +26,7 @@ body{
 
 span{
     border: 5rem solid black;
-    cursor: default;
+    cursor: pointer;
 }
 
 .menu-link:hover{
@@ -34,6 +37,7 @@ span{
   background: white;
   /* height: 10rem; */
   border: 2px solid black;
+  text-align: center;
 }
 
 #form-section{
@@ -42,6 +46,15 @@ span{
   border: 1px solid darkgreen;
   padding: 2rem;
 }
+
+.nav-input{
+  font-family: monospace;
+  text-align: center;
+}
+
+/* .nav-input{
+  border-color: gold;
+} */
 
 /* .numeral{
     font-size: 5rem;
@@ -59,6 +72,7 @@ span{
 
 #title-section{
     margin: 1rem;
+    text-align: center;
 }
 
 #project-name{
@@ -68,6 +82,21 @@ span{
     justify-content: center;
     align-items: center;
     font-size: 5rem;
+}
+
+#deleteButton{
+  margin-top: 2rem;
+}
+
+#noProjects{
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 3.5rem;
+  line-height: 5rem;
+  font-style: italic;
+  background:rgba(0, 128, 128, 0.603);
+  color: white;
+  border-radius: 2rem;
+  padding: 1.5rem;
 }
 
 .subtitle{
@@ -132,6 +161,10 @@ input[type='checkbox'] {
 input[type='checkbox']:checked {
     background: black;
     border: none;
+}
+
+input[type='text']{
+  color: red;
 }
 
 button {
@@ -244,3 +277,66 @@ button {
     color: white;
   } */
   
+
+  #addTodoTitle{
+    /* margin-left: 43%;  */
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  #projectInput{
+    /* margin-bottom: 1rem; */
+    height: 3rem;
+  }
+
+  .enterProjectTitle{
+    font-style: italic;
+  }
+
+  .greencheckmark{
+    color: green;
+    font-size: 5rem;
+    display: inline;
+  }
+
+  h1{
+    cursor: pointer;
+    margin: 0;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  @media screen and (max-width: 960px){
+    #user-nav{
+      text-align: center;
+    }
+  }
+  
+  @media screen and (max-width: 825px){
+    input{
+      width: 50%;
+      
+    }
+  }
+
+  @media screen and (max-width: 500px){
+    input{
+      height: 4rem;
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+  }
+
+  @media screen and (max-width: 450px){
+    input{
+      width: 2rem;
+    }
+  }
+  /* #nav-submit{
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  } */

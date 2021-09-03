@@ -11,7 +11,8 @@
 </head>
 <body>
     <div id = "page-title">
-        <h1>Welcome to your personal checklist</h1>
+        <h1><p class = "greencheckmark">✔️</p>&nbsp;Welcome to your personal checklist&nbsp;<p class = "greencheckmark">✔️</p></h1>
+        
     </div>
     <div id = "user-nav">
         <p class = "menu-link">New Project</p>
@@ -26,7 +27,7 @@
             <a href="#">Link 3</a> -->
         </div>
         </div>
-        <span></span>
+        <!-- <span></span> -->
     </div>
     <div id = "form-nav">
         
@@ -37,6 +38,7 @@
             <p class ="subtitle">Total Tasks: 1</p>
             <p class ="subtitle">Tasks Completed: 0</p>
             <p class ="subtitle">You have completed 0% of your tasks</p>
+            <button id = "deleteButton" onclick = "displayController.deleteProject()">Delete Project</button>
         </div>
         <div id = "todo-body">
             <div id = "todo-template0" class = "todo-template">
